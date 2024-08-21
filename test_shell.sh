@@ -1,17 +1,26 @@
 #!/bin/bash
 
-echo "Testing /bin/ls"
-echo "/bin/ls" | ./shell
+echo "Running Simple Shell Tests"
 
-echo "Testing /bin/pwd"
-echo "/bin/pwd" | ./shell
+# Test 1: Basic Command
+echo "Test 1: ls"
+echo "ls" | ./shell
 
-echo "Testing invalid command"
-echo "/bin/invalidcommand" | ./shell
+# Test 2: Command with Arguments
+echo "Test 2: ls -l"
+echo "ls -l" | ./shell
 
-echo "Testing empty input"
-echo "" | ./shell
+# Test 3: Command with Multiple Arguments
+echo "Test 3: ls -l /home"
+echo "ls -l /home" | ./shell
 
-echo "Testing Ctrl+D (EOF)"
-echo "" | ./shell  # Should exit
+# Test 4: Echo Command
+echo "Test 4: echo Hello"
+echo "echo Hello, World!" | ./shell
+
+# Test 5: Invalid Command
+echo "Test 5: invalidcommand"
+echo "invalidcommand" | ./shell
+
+echo "All tests completed."
 

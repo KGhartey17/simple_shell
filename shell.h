@@ -3,11 +3,16 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <string.h>
+#include <unistd.h>
+#include <sys/types.h>
 #include <sys/wait.h>
 
-void execute_command(char *command);
+#define MAX_INPUT 1024
+#define MAX_ARGS 64
+
+void parse_input(char *input, char **args);
+void execute_command(char **args);
 
 #endif /* SHELL_H */
 

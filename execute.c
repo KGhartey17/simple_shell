@@ -1,12 +1,8 @@
 #include "shell.h"
 
-void execute_command(char *command)
+void execute_command(char **args)
 {
     pid_t pid;
-    char *argv[2];
-
-    argv[0] = command;
-    argv[1] = NULL;
 
     pid = fork();
     if (pid == -1)
@@ -17,9 +13,9 @@ void execute_command(char *command)
 
     if (pid == 0)  /* Child process */
     {
-        if (execve(command, argv, NULL) == -1)
+        if (execvp(args[0], args) == -1)
         {
-            perror(command);
+            perror(args[0]);
         }
         exit(EXIT_FAILURE);
     }

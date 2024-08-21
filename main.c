@@ -2,32 +2,26 @@
 
 int main(void)
 {
-    char *line = NULL;
-    size_t len = 0;
-    ssize_t nread;
+    char input[MAX_INPUT];
+    char *args[MAX_ARGS];
 
     while (1)
     {
-        printf("#cisfun$ ");
-        nread = getline(&line, &len, stdin);
+        printf("$ ");
 
-        if (nread == -1)  /* Handle Ctrl+D */
-        {
-            free(line);
-            exit(EXIT_SUCCESS);
-        }
+        if (fgets(input, sizeof(input), stdin) == NULL)
+            break;
 
-        /* Remove newline character */
-        if (line[nread - 1] == '\n')
-            line[nread - 1] = '\0';
+        input[strcspn(input, "\n")] = '\0';  // Remove newline
 
-        if (line[0] != '\0')  /* Ignore empty input */
-        {
-            execute_command(line);
-        }
+        parse_input(input, args);  // Parse the input into command and arguments
+
+        if (args[0] == NULL)  // Skip empty command
+            continue;
+
+        execute_command(args);  // Execute the command
     }
 
-    free(line);
-    return (0);
+    return 0;
 }
 
