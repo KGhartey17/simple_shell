@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "Running Simple Shell Tests for PATH Handling"
+echo "Running Simple Shell Tests"
 
 # Test 1: Command with full path
 echo "Test 1: /bin/ls"
@@ -22,7 +22,7 @@ echo "echo Hello, World!" | ./hsh
 echo "Test 5: nonexistentcommand"
 echo "nonexistentcommand" | ./hsh
 
-# Test 6: Command with a PATH that does not include the command
+# Test 6: Check PATH handling for nonexistent command
 echo "Test 6: Check PATH handling for nonexistent command"
 echo "echo $PATH"
 echo "echo nonexistentcommand" | ./hsh
@@ -31,55 +31,60 @@ echo "echo nonexistentcommand" | ./hsh
 echo "Test 7: No fork for nonexistent command"
 echo "nonexistentcommand" | ./hsh
 
-# Test 8: Command with special characters
+# Test 8: Special characters in command
 echo "Test 8: Special characters in command"
-echo "echo 'Special chars: !@#$%^&*()'" | ./hsh
+echo "echo '!@#$%^&*()'" | ./hsh
 
 # Test 9: Command with multiple arguments
 echo "Test 9: Command with multiple arguments"
-echo "echo 'Arg1 Arg2 Arg3'" | ./hsh
+echo "echo Arg1 Arg2 Arg3" | ./hsh
 
-# Test 10: Command with quotes
+# Test 10: Command with single quotes
 echo "Test 10: Command with single quotes"
 echo "echo 'Single quoted argument'" | ./hsh
-echo "Test 10: Command with double quotes"
+
+# Test 11: Command with double quotes
+echo "Test 11: Command with double quotes"
 echo "echo \"Double quoted argument\"" | ./hsh
 
-# Test 11: Command with environment variable
-echo "Test 11: Command with environment variable"
+# Test 12: Command with environment variable
+echo "Test 12: Command with environment variable"
 export TEST_VAR="TestValue"
 echo "echo \$TEST_VAR" | ./hsh
 
-# Test 12: Empty command
-echo "Test 12: Empty command"
+# Test 13: Empty command
+echo "Test 13: Empty command"
 echo "" | ./hsh
 
-# Test 13: Command with relative path
-echo "Test 13: Relative path"
-echo "./hsh" | ./hsh
+# Test 14: Relative path
+echo "Test 14: Relative path"
+echo "./some_relative_command" | ./hsh
 
-# Test 14: Command with trailing spaces
-echo "Test 14: Command with trailing spaces"
-echo "ls     " | ./hsh
+# Test 15: Command with trailing spaces
+echo "Test 15: Command with trailing spaces"
+echo "echo 'Trailing spaces     '" | ./hsh
 
-# Test 15: Command with multiple slashes in path
-echo "Test 15: Command with multiple slashes in path"
-echo "ls ///tmp" | ./hsh
+# Test 16: Command with multiple slashes in path
+echo "Test 16: Command with multiple slashes in path"
+echo "echo /tmp/////somepath/////file" | ./hsh
 
-# Test 16: Long command argument
-echo "Test 16: Long command argument"
-LONG_ARG=$(head -c 1000 </dev/urandom | base64)
-echo "echo $LONG_ARG" | ./hsh
+# Test 17: Long command argument
+echo "Test 17: Long command argument"
+echo "echo $(head -c 1024 < /dev/urandom)" | ./hsh
 
-# Test 17: Commands with invalid options
-echo "Test 17: Commands with invalid options"
+# Test 18: Commands with invalid options
+echo "Test 18: Commands with invalid options"
 echo "ls --invalid-option" | ./hsh
 
-# Test 18: Test execution of a shell script
-echo "Test 18: Test execution of a shell script"
-echo -e "#!/bin/bash\n echo Script executed" > test_script.sh
-chmod +x test_script.sh
+# Test 19: Test execution of a shell script
+echo "Test 19: Test execution of a shell script"
+echo "echo 'Script executed' > test_script.sh"
+echo "chmod +x test_script.sh"
 echo "./test_script.sh" | ./hsh
+
+# Test 20: Test exit command
+echo "Test 20: Test exit command"
+echo "exit" | ./hsh
 
 echo "All tests completed."
 

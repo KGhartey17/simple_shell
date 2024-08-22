@@ -1,34 +1,53 @@
 #include "shell.h"
+#include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
+#define MAX_PATH 1024
 
 /**
- * find_command_path - Searches for the command in directories listed in PATH
- * @cmd: Command to find
+ * find_command_path - Finds the full path of a command
+ * @cmd: The command to find
  * 
- * Return: Full path to the command if found, NULL otherwise
+ * Return: The full path of the command if found, NULL otherwise
  */
-char *find_command_path(const char *cmd)
-{
-    char *path = getenv("PATH"); // Get PATH environment variable
-    if (!path)
+char *find_command_path(const char *cmd) {
+    char *path;
+    char path_copy[MAX_PATH];
+    char *token;
+    struct stat st;
+    char full_path[MAX_PATH];
+
+    path = getenv("PATH");
+    if (path == NULL) {
+        perror("getenv");
         return NULL;
-
-    char *path_copy = strdup(path);
-    char *dir = strtok(path_copy, ":");
-    while (dir)
-    {
-        char full_path[MAX_INPUT];
-        snprintf(full_path, sizeof(full_path), "%s/%s", dir, cmd);
-
-        if (access(full_path, X_OK) == 0)
-        {
-            free(path_copy);
-            return strdup(full_path); // Command found, return the full path
-        }
-
-        dir = strtok(NULL, ":");
     }
 
-    free(path_copy);
-    return NULL; // Command not found
+    snprintf(path_copy, MAX_PATH, "%s", path);
+
+    token = strtok(path_copy, ":");
+    while (token != NULL) {
+        snprintf(full_path, MAX_PATH, "%s/%s", token, cmd);
+        
+        /* Ensure there's only one '/' between the directory and the command */
+        if (full_path[strlen(full_path) - 1] == '/') {
+            full_path[strlen(full_path) - 1] = '\0';
+        }
+
+        printf("Checking: %s\n", full_path);
+
+        if (stat(full_path, &st) == 0 && S_ISREG(st.st_mode) && (st.st_mode & S_IXUSR)) {
+            printf("Found command at: %s\n", full_path);
+            return strdup(full_path);
+        }
+
+        token = strtok(NULL, ":");
+    }
+
+    printf("Command not found in PATH\n");
+    return NULL;
 }
 

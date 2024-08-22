@@ -1,44 +1,60 @@
 #include "shell.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/wait.h>
+#include <string.h>
 
 /**
- * execute_command - Forks a process and executes the command
- * @args: Array of strings containing the command and its arguments
- *
- * If `execve` fails, it prints an error message.
+ * execute_command - Executes a command with arguments.
+ * @args: Array of strings representing the command and its arguments.
  */
-void execute_command(char **args)
-{
-    char *cmd_path;
+void execute_command(char **args) {
     pid_t pid;
+    char *full_path;
 
-    cmd_path = find_command_path(args[0]); // Find the command path
-    if (!cmd_path)
-    {
-        fprintf(stderr, "%s: command not found\n", args[0]);
-        return;
+    /* Handle empty commands */
+    if (args[0] == NULL || args[0][0] == '\0') {
+        return; /* Simply return if no command is provided */
     }
 
-    pid = fork();  // Create a new process
-    if (pid == -1)
-    {
-        perror("Error:");
-        free(cmd_path);
-        return;
+    /* Handle built-in 'exit' command */
+    if (args[0] != NULL && strcmp(args[0], "exit") == 0) {
+        exit(EXIT_SUCCESS);
     }
 
-    if (pid == 0)  /* Child process */
-    {
-        if (execve(cmd_path, args, NULL) == -1)  // Execute the command
-        {
-            perror(args[0]);  // Print error if command fails
-        }
-        free(cmd_path);
-        exit(EXIT_FAILURE);  // Exit child process
+    /* Resolve the full path of the command */
+    if (args[0][0] == '.' || args[0][0] == '/') {
+        full_path = strdup(args[0]); /* Use the relative or absolute path directly */
+    } else {
+        full_path = find_command_path(args[0]); /* Find the command in PATH */
     }
-    else  /* Parent process */
-    {
-        wait(NULL);
-        free(cmd_path);
+
+    if (full_path == NULL) {
+        /* Command not found in PATH or invalid path */
+        fprintf(stderr, "%s: No such file or directory\n", args[0]);
+        exit(EXIT_FAILURE);
+    }
+
+    pid = fork(); /* Create a new process */
+    if (pid == -1) {
+        /* Fork failed */
+        perror("fork");
+        free(full_path);
+        exit(EXIT_FAILURE);
+    }
+
+    if (pid == 0) { /* Child process */
+        printf("Executing command: %s\n", full_path);
+        execve(full_path, args, NULL); /* Execute the command */
+        /* If execve returns, there was an error */
+        perror("execve");
+        free(full_path);
+        exit(EXIT_FAILURE);
+    } else { /* Parent process */
+        int status;
+        waitpid(pid, &status, 0); /* Wait for child process to finish */
+        free(full_path);
     }
 }
 
