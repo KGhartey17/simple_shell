@@ -26,5 +26,13 @@ void parse_input(char *input, char **args);
  */
 void execute_command(char **args);
 
+/**
+ * find_command_path - Searches for the command in directories listed in PATH
+ * @cmd: Command to find
+ * 
+ * Return: Full path to the command if found, NULL otherwise
+ */
+char *find_command_path(const char *cmd);
+
 #endif /* SHELL_H */
 
