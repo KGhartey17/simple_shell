@@ -1,3 +1,4 @@
+/* execute_command.c */
 #include "shell.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -21,6 +22,12 @@ void execute_command(char **args) {
     /* Handle built-in 'exit' command */
     if (args[0] != NULL && strcmp(args[0], "exit") == 0) {
         exit(EXIT_SUCCESS);
+    }
+
+    /* Handle built-in 'env' command */
+    if (args[0] != NULL && strcmp(args[0], "env") == 0) {
+        print_env();
+        return; /* No need to fork or execute an external command */
     }
 
     /* Resolve the full path of the command */

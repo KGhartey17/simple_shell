@@ -7,8 +7,8 @@
  */
 int main(void)
 {
-    char input[MAX_INPUT];
-    char *args[MAX_ARGS];
+    char input[MAX_INPUT]; /* Buffer to hold the input from the user */
+    char *args[MAX_ARGS]; /* Array to hold parsed command and arguments */
 
     while (1)
     {

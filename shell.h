@@ -1,3 +1,4 @@
+/* shell.h */
 #ifndef SHELL_H
 #define SHELL_H
 
@@ -33,6 +34,11 @@ void execute_command(char **args);
  * Return: Full path to the command if found, NULL otherwise
  */
 char *find_command_path(const char *cmd);
+
+/**
+ * print_env - Prints the current environment variables
+ */
+void print_env(void);
 
 #endif /* SHELL_H */
 
