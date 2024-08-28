@@ -1,28 +1,44 @@
 #include "shell.h"
 
 /**
- * main - Entry point for the shell program
+ * main - entry point
+ * @ac: arg count
+ * @av: arg vector
  *
- * Return: Always 0 (Success)
+ * Return: 0 on success, 1 on error
  */
-int main(void)
+int main(int ac, char **av)
 {
-    char input[MAX_INPUT]; /* Buffer to hold the input from the user */
-    char *args[MAX_ARGS]; /* Array to hold parsed command and arguments */
+	info_t info[] = { INFO_INIT };
+	int fd = 2;
 
-    while (1)
-    {
-        printf("($) ");
-        if (fgets(input, sizeof(input), stdin) == NULL)
-            break;
+	asm ("mov %1, %0\n\t"
+		"add $3, %0"
+		: "=r" (fd)
+		: "r" (fd));
 
-        input[strcspn(input, "\n")] = '\0';  /* Remove newline */
-
-        parse_input(input, args);  /* Parse the input into command and arguments */
-        if (args[0] != NULL)        /* Skip empty commands */
-            execute_command(args);  /* Execute the command with arguments */
-    }
-
-    return (0);
+	if (ac == 2)
+	{
+		fd = open(av[1], O_RDONLY);
+		if (fd == -1)
+		{
+			if (errno == EACCES)
+				exit(126);
+			if (errno == ENOENT)
+			{
+				_eputs(av[0]);
+				_eputs(": 0: Can't open ");
+				_eputs(av[1]);
+				_eputchar('\n');
+				_eputchar(BUF_FLUSH);
+				exit(127);
+			}
+			return (EXIT_FAILURE);
+		}
+		info->readfd = fd;
+	}
+	populate_env_list(info);
+	read_history(info);
+	hsh(info, av);
+	return (EXIT_SUCCESS);
 }
-

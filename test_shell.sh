@@ -1,90 +1,100 @@
 #!/bin/bash
 
-echo "Running Simple Shell Tests"
+# Define the shell executable
+SHELL_EXEC="./hsh"
 
-# Test 1: Command with full path
-echo "Test 1: /bin/ls"
-echo "/bin/ls" | ./hsh
+# Test for Simple Shell 0.1
+echo "Running tests for Simple Shell 0.1"
 
-# Test 2: Command found in PATH
-echo "Test 2: ls"
-echo "ls" | ./hsh
+# Test prompt display and command execution
+echo "Testing prompt and command execution"
+echo "ls" | $SHELL_EXEC > output.txt
+echo "cat output.txt" | $SHELL_EXEC
+rm output.txt
 
-# Test 3: Command with arguments
-echo "Test 3: ls -l /tmp"
-echo "ls -l /tmp" | ./hsh
+# Test end of file condition (Ctrl+D)
+echo "Testing end of file (Ctrl+D)"
+echo "" | $SHELL_EXEC
 
-# Test 4: Echo command
-echo "Test 4: echo Hello, World!"
-echo "echo Hello, World!" | ./hsh
+# Test invalid command
+echo "Testing invalid command"
+echo "invalid_command" | $SHELL_EXEC
 
-# Test 5: Nonexistent command
-echo "Test 5: nonexistentcommand"
-echo "nonexistentcommand" | ./hsh
+# Test exit command
+echo "Testing exit command"
+echo "exit" | $SHELL_EXEC
 
-# Test 6: Check PATH handling for nonexistent command
-echo "Test 6: Check PATH handling for nonexistent command"
-echo "echo $PATH"
-echo "echo nonexistentcommand" | ./hsh
+# Test with commands having arguments (Simple Shell 0.2)
+echo "Running tests for Simple Shell 0.2"
+echo "ls -l" | $SHELL_EXEC
+echo "/bin/ls -l" | $SHELL_EXEC
 
-# Test 7: Verify no fork for nonexistent command
-echo "Test 7: No fork for nonexistent command"
-echo "nonexistentcommand" | ./hsh
+# Test PATH handling (Simple Shell 0.3)
+echo "Running tests for Simple Shell 0.3"
+echo "ls" | $SHELL_EXEC
+echo "which ls" | $SHELL_EXEC
 
-# Test 8: Special characters in command
-echo "Test 8: Special characters in command"
-echo "echo '!@#$%^&*()'" | ./hsh
+# Test exit built-in (Simple Shell 0.4)
+echo "Running tests for Simple Shell 0.4"
+echo "exit" | $SHELL_EXEC
 
-# Test 9: Command with multiple arguments
-echo "Test 9: Command with multiple arguments"
-echo "echo Arg1 Arg2 Arg3" | ./hsh
+# Test env built-in (Simple Shell 1.0)
+echo "Running tests for Simple Shell 1.0"
+echo "env" | $SHELL_EXEC
 
-# Test 10: Command with single quotes
-echo "Test 10: Command with single quotes"
-echo "echo 'Single quoted argument'" | ./hsh
+# Test custom getline implementation (Simple Shell 0.1.1)
+echo "Running tests for Simple Shell 0.1.1"
+echo "ls" | $SHELL_EXEC
 
-# Test 11: Command with double quotes
-echo "Test 11: Command with double quotes"
-echo "echo \"Double quoted argument\"" | ./hsh
+# Test argument handling for built-in exit (Simple Shell 0.4.1)
+echo "Running tests for Simple Shell 0.4.1"
+echo "exit 98" | $SHELL_EXEC
+echo "echo \$?" | $SHELL_EXEC
 
-# Test 12: Command with environment variable
-echo "Test 12: Command with environment variable"
-export TEST_VAR="TestValue"
-echo "echo \$TEST_VAR" | ./hsh
+# Test setenv and unsetenv (Advanced)
+echo "Running tests for setenv and unsetenv"
+echo "setenv TEST_VAR test_value" | $SHELL_EXEC
+echo "echo \$TEST_VAR" | $SHELL_EXEC
+echo "unsetenv TEST_VAR" | $SHELL_EXEC
+echo "echo \$TEST_VAR" | $SHELL_EXEC
 
-# Test 13: Empty command
-echo "Test 13: Empty command"
-echo "" | ./hsh
+# Test cd command (Advanced)
+echo "Running tests for cd command"
+echo "cd /" | $SHELL_EXEC
+echo "pwd" | $SHELL_EXEC
+echo "cd /tmp" | $SHELL_EXEC
+echo "pwd" | $SHELL_EXEC
+echo "cd -" | $SHELL_EXEC
+echo "pwd" | $SHELL_EXEC
 
-# Test 14: Relative path
-echo "Test 14: Relative path"
-echo "./some_relative_command" | ./hsh
+# Test command separator (;) (Advanced)
+echo "Running tests for command separator (;)"
+echo "ls /var ; ls /tmp" | $SHELL_EXEC
 
-# Test 15: Command with trailing spaces
-echo "Test 15: Command with trailing spaces"
-echo "echo 'Trailing spaces     '" | ./hsh
+# Test logical operators (&& and ||) (Advanced)
+echo "Running tests for logical operators (&& and ||)"
+echo "ls /var && ls /tmp" | $SHELL_EXEC
+echo "ls /invalid_dir || ls /tmp" | $SHELL_EXEC
 
-# Test 16: Command with multiple slashes in path
-echo "Test 16: Command with multiple slashes in path"
-echo "echo /tmp/////somepath/////file" | ./hsh
+# Test alias command (Advanced)
+echo "Running tests for alias command"
+echo "alias ll='ls -l'" | $SHELL_EXEC
+echo "ll" | $SHELL_EXEC
 
-# Test 17: Long command argument
-echo "Test 17: Long command argument"
-echo "echo $(head -c 1024 < /dev/urandom)" | ./hsh
+# Test variable replacement ($? and $$) (Advanced)
+echo "Running tests for variable replacement"
+echo "ls /var" | $SHELL_EXEC
+echo "echo \$?" | $SHELL_EXEC
+echo "echo \$\$" | $SHELL_EXEC
 
-# Test 18: Commands with invalid options
-echo "Test 18: Commands with invalid options"
-echo "ls --invalid-option" | ./hsh
+# Test comments (#) (Advanced)
+echo "Running tests for comments (#)"
+echo "ls /var # listing /var directory" | $SHELL_EXEC
 
-# Test 19: Test execution of a shell script
-echo "Test 19: Test execution of a shell script"
-echo "echo 'Script executed' > test_script.sh"
-echo "chmod +x test_script.sh"
-echo "./test_script.sh" | ./hsh
-
-# Test 20: Test exit command
-echo "Test 20: Test exit command"
-echo "exit" | ./hsh
+# Test file input mode (Advanced)
+echo "Running tests for file input mode"
+echo -e "ls\npwd\nexit" > commands.txt
+$SHELL_EXEC commands.txt
+rm commands.txt
 
 echo "All tests completed."
-
