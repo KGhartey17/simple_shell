@@ -1,28 +1,73 @@
 #include "shell.h"
 
 /**
- * main - Entry point for the shell program
+ * free_data - frees data structure
  *
- * Return: Always 0 (Success)
+ * @datash: data structure
+ * Return: no return
  */
-int main(void)
+void free_data(data_shell *datash)
 {
-    char input[MAX_INPUT]; /* Buffer to hold the input from the user */
-    char *args[MAX_ARGS]; /* Array to hold parsed command and arguments */
+	unsigned int i;
 
-    while (1)
-    {
-        printf("($) ");
-        if (fgets(input, sizeof(input), stdin) == NULL)
-            break;
+	for (i = 0; datash->_environ[i]; i++)
+	{
+		free(datash->_environ[i]);
+	}
 
-        input[strcspn(input, "\n")] = '\0';  /* Remove newline */
-
-        parse_input(input, args);  /* Parse the input into command and arguments */
-        if (args[0] != NULL)        /* Skip empty commands */
-            execute_command(args);  /* Execute the command with arguments */
-    }
-
-    return (0);
+	free(datash->_environ);
+	free(datash->pid);
 }
 
+/**
+ * set_data - Initialize data structure
+ *
+ * @datash: data structure
+ * @av: argument vector
+ * Return: no return
+ */
+void set_data(data_shell *datash, char **av)
+{
+	unsigned int i;
+
+	datash->av = av;
+	datash->input = NULL;
+	datash->args = NULL;
+	datash->status = 0;
+	datash->counter = 1;
+
+	for (i = 0; environ[i]; i++)
+		;
+
+	datash->_environ = malloc(sizeof(char *) * (i + 1));
+
+	for (i = 0; environ[i]; i++)
+	{
+		datash->_environ[i] = _strdup(environ[i]);
+	}
+
+	datash->_environ[i] = NULL;
+	datash->pid = aux_itoa(getpid());
+}
+
+/**
+ * main - Entry point
+ *
+ * @ac: argument count
+ * @av: argument vector
+ *
+ * Return: 0 on success.
+ */
+int main(int ac, char **av)
+{
+	data_shell datash;
+	(void) ac;
+
+	signal(SIGINT, get_sigint);
+	set_data(&datash, av);
+	shell_loop(&datash);
+	free_data(&datash);
+	if (datash.status < 0)
+		return (255);
+	return (datash.status);
+}
